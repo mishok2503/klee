@@ -123,6 +123,13 @@ cl::opt<std::string> MaxTime(
              "Set to 0s to disable (default=0s)"),
     cl::init("0s"),
     cl::cat(TerminationCat));
+
+
+cl::opt<bool> ExternalCallsAsm(
+    "asm-external-calls",
+    cl::init(false),
+    cl::desc("Allows inline assmebly call (default=false)"),
+    cl::cat(ExtCallsCat));
 } // namespace klee
 
 namespace {
@@ -210,7 +217,6 @@ cl::opt<bool> AllExternalWarnings(
     cl::desc("Issue a warning everytime an external call is made, "
              "as opposed to once per function (default=false)"),
     cl::cat(ExtCallsCat));
-
 
 /*** Seeding options ***/
 
@@ -2402,8 +2408,13 @@ void Executor::executeInstruction(ExecutionState &state, KInstruction *ki) {
       arguments.push_back(eval(ki, j+1, state).value);
 
     if (isa<InlineAsm>(fp)) {
-      InlineAsm *asmValue = cast<InlineAsm>(fp);
-      callExternalFunction(state, ki, asmValue, arguments);
+      if (ExternalCallsAsm) {
+        InlineAsm *asmValue = cast<InlineAsm>(fp);
+        callExternalFunction(state, ki, asmValue, arguments);
+      } else {
+        klee_warning("Inline assembly disallowed (asm-external-calls=false)");
+        terminateStateOnExecError(state, "inline assembly external calls disallowed");
+      }
       break;
     }
 
@@ -3880,7 +3891,7 @@ void Executor::callExternalFunction(ExecutionState &state,
     if (AllExternalWarnings)
       klee_warning("%s", os.str().c_str());
     else
-      klee_warning_once(callable.getFunction(), "%s", os.str().c_str()); //TODO
+      klee_warning_once(&callable, "%s", os.str().c_str());
   }
 
   bool success = externalDispatcher->executeCall(callable, target->inst, args);

@@ -1,12 +1,3 @@
-//===-- KCallable.cpp -------------------------------------------*- C++ -*-===//
-//
-//                     The KLEE Symbolic Virtual Machine
-//
-// This file is distributed under the University of Illinois Open Source
-// License. See LICENSE.TXT for details.
-//
-//===----------------------------------------------------------------------===//
-
 #include "klee/Module/KCallable.h"
 
 #include "llvm/IR/Function.h"
@@ -20,7 +11,7 @@ KCallable::KCallable(Function *func) : func(func), isFunc(true) {}
 KCallable::KCallable(InlineAsm *asmValue) : asmValue(asmValue), isFunc(false) {}
 
 StringRef KCallable::getName() const {
-    return isFunc ? func->getName() : "InlineAssembly";
+    return isFunc ? func->getName() : "__asm__";
 }
 
 Function* KCallable::getFunction() {
