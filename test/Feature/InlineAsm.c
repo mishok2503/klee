@@ -6,17 +6,20 @@
 
 int main() {
 
-    int x;
-    klee_make_symbolic(&x, sizeof(x), "x");
-    if (x == 239) {
-        __asm__ ("neg %0" : "+r"(x));
-        assert(x == -239);
-    }
+  int x;
+  klee_make_symbolic(&x, sizeof(x), "x");
+  if (x == 239) {
+    __asm__("neg %0"
+            : "+r"(x));
+    assert(x == -239);
+  }
 
-    int y = x;
-    __asm__ ("add $5, %0" : "+r"(x));
-    __asm__ ("add $0, %0" : "+r"(y));
-    assert(x == y + 5);
+  int y = x;
+  __asm__("add $5, %0"
+          : "+r"(x));
+  __asm__("add $0, %0"
+          : "+r"(y));
+  assert(x == y + 5);
 
-    return 0;
+  return 0;
 }

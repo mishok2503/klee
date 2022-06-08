@@ -11,30 +11,31 @@ using namespace klee;
 unsigned KCallable::globalAsmId = 0;
 
 KCallable::KCallable(Function *func) : func(func), isFunc(true) {}
-KCallable::KCallable(InlineAsm *asmValue) : asmValue(asmValue),  asmId(globalAsmId++), isFunc(false) {}
+KCallable::KCallable(InlineAsm *asmValue)
+    : asmValue(asmValue), asmId(globalAsmId++), isFunc(false) {}
 
 StringRef KCallable::getName() const {
-    if (isFunc)
-        return func->getName();
-    return "__asm__" + Twine(asmId).str();
+  if (isFunc)
+    return func->getName();
+  return "__asm__" + Twine(asmId).str();
 }
 
-Function* KCallable::getFunction() {
-    return isFunc ? func : nullptr;
+Function *KCallable::getFunction() {
+  return isFunc ? func : nullptr;
 }
 
-InlineAsm* KCallable::getInlineAsm() {
-    return isFunc ? nullptr : asmValue;
+InlineAsm *KCallable::getInlineAsm() {
+  return isFunc ? nullptr : asmValue;
 }
 
 LLVMContext &KCallable::getContext() const {
-    return isFunc ? func->getContext() : asmValue->getContext();
+  return isFunc ? func->getContext() : asmValue->getContext();
 }
 
-PointerType* KCallable::getType() const {
-    return isFunc ? func->getType() : asmValue->getType();
+PointerType *KCallable::getType() const {
+  return isFunc ? func->getType() : asmValue->getType();
 }
 
 bool KCallable::isFunction() const {
-    return isFunc;
+  return isFunc;
 }
