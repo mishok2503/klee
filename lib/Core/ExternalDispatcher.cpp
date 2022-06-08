@@ -276,7 +276,7 @@ Function *ExternalDispatcherImpl::createDispatcher(KCallable target,
   // The module identifier is included because for the MCJIT we need
   // unique function names across all `llvm::Modules`s.
   std::string fnName =
-      "dispatcher_" + target.getName().str() + module->getModuleIdentifier(); // TODO: name
+      "dispatcher_" + target.getName().str() + module->getModuleIdentifier();
   Function *dispatcher =
       Function::Create(FunctionType::get(Type::getVoidTy(ctx), nullary, false),
                        GlobalVariable::ExternalLinkage, fnName, module);

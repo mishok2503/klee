@@ -3890,8 +3890,13 @@ void Executor::callExternalFunction(ExecutionState &state,
     
     if (AllExternalWarnings)
       klee_warning("%s", os.str().c_str());
-    else
-      klee_warning_once(&callable, "%s", os.str().c_str());
+    else {
+      const void* id = callable.getFunction();
+      if (!id) {
+        id = callable.getInlineAsm();
+      }
+      klee_warning_once(id, "%s", os.str().c_str());
+    }
   }
 
   bool success = externalDispatcher->executeCall(callable, target->inst, args);

@@ -1,5 +1,6 @@
 #include "klee/Module/KCallable.h"
 
+#include "llvm/ADT/Twine.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/InlineAsm.h"
 #include "llvm/IR/LLVMContext.h"
@@ -7,11 +8,15 @@
 using namespace llvm;
 using namespace klee;
 
+unsigned KCallable::globalAsmId = 0;
+
 KCallable::KCallable(Function *func) : func(func), isFunc(true) {}
-KCallable::KCallable(InlineAsm *asmValue) : asmValue(asmValue), isFunc(false) {}
+KCallable::KCallable(InlineAsm *asmValue) : asmValue(asmValue),  asmId(globalAsmId++), isFunc(false) {}
 
 StringRef KCallable::getName() const {
-    return isFunc ? func->getName() : "__asm__";
+    if (isFunc)
+        return func->getName();
+    return "__asm__" + Twine(asmId).str();
 }
 
 Function* KCallable::getFunction() {

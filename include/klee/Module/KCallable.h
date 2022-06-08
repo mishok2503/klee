@@ -12,9 +12,14 @@ namespace llvm {
 namespace klee {
   class KCallable {
   private:
+    static unsigned globalAsmId;
+
     union {
       llvm::Function* func;
-      llvm::InlineAsm* asmValue;
+      struct {
+        llvm::InlineAsm* asmValue;
+        unsigned asmId;
+      };
     };
     bool isFunc;
   public:
